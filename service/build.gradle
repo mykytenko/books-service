@@ -1,0 +1,40 @@
+apply plugin: 'application'
+mainClassName = "com.examples.books.Main"
+
+apply plugin: 'java'
+
+ext {
+    scalaVersion = '2.12'
+    finatraVersion = '2.11.0'
+    slickVersion = '3.2.0'
+    h2Version = '1.4.195'
+}
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.12.1'
+    compile "ch.qos.logback:logback-classic:1.1.3"
+
+    compile "com.twitter:finatra-http_${project.ext.scalaVersion}:${project.ext.finatraVersion}"
+    compile "com.twitter:inject-core_${project.ext.scalaVersion}:${project.ext.finatraVersion}"
+
+    compile "com.typesafe.slick:slick_${project.ext.scalaVersion}:${project.ext.slickVersion}"
+    compile "com.typesafe.slick:slick-hikaricp_${project.ext.scalaVersion}:${project.ext.slickVersion}"
+    compile "com.h2database:h2:1.4.195"
+
+    compile "org.webjars:bootstrap:3.3.7"
+    compile "org.webjars:jquery:2.1.4"
+
+
+    testCompile "org.scalatest:scalatest_${project.ext.scalaVersion}:3.0.3"
+    testCompile "org.scalacheck:scalacheck_${project.ext.scalaVersion}:1.13.5"
+    testCompile "org.specs2:specs2_${project.ext.scalaVersion}:2.4.17"
+    testCompile "com.google.inject.extensions:guice-testlib:4.0"
+
+    testCompile "com.twitter:finatra-http_${project.ext.scalaVersion}:${project.ext.finatraVersion}:tests"
+    testCompile "com.twitter:inject-core_${project.ext.scalaVersion}:${project.ext.finatraVersion}:tests"
+    testCompile "com.twitter:inject-app_${project.ext.scalaVersion}:${project.ext.finatraVersion}:tests"
+    testCompile "com.twitter:inject-server_${project.ext.scalaVersion}:${project.ext.finatraVersion}:tests"
+    testCompile "com.twitter:inject-modules_${project.ext.scalaVersion}:${project.ext.finatraVersion}:tests"
+
+}
+

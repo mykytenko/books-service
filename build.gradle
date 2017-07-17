@@ -1,0 +1,24 @@
+group 'com.examples.books'
+version '1.0'
+
+allprojects {
+    apply plugin: 'scala'
+    apply plugin: 'idea'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile 'org.scala-lang:scala-library:2.12.1'
+        testCompile 'org.scala-lang:scala-library:2.12.1'
+    }
+}
+
+task wrapper(type: Wrapper) {   // https://docs.gradle.org/3.3/userguide/gradle_wrapper.html
+    gradleVersion = '3.4'       // run gradlew wrapper if need to update the version
+}
+
