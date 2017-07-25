@@ -10,7 +10,10 @@ import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.response.ResponseBuilder
 import com.twitter.finatra.response.Mustache
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+import scala.util.Success
 
 
 class BookController @Inject()(bookService: BookService, response: ResponseBuilder) extends Controller {
@@ -20,21 +23,25 @@ class BookController @Inject()(bookService: BookService, response: ResponseBuild
     val startIndex = request.params.getIntOrElse("startIndex", START_INDEX)
     val limit = request.params.getIntOrElse("limit", LIMIT)
 
-    bookService.get(startIndex, limit) map {
-      result => response.ok.view("/books.mustache", BooksView(result))
-    }
+    val booksView = bookService.get(startIndex, limit).map {
+      books =>
+        var pages = bookService.count() map {
+          count =>
+            var pages: Pages = null
+            if (limit > count)
+              pages = Pages(null, null)
+            else if (startIndex + limit >= count)
+              pages = Pages(Page(startIndex - limit, limit), null)
+            else if (startIndex <= 0)
+              pages = Pages(null, Page(startIndex + limit, limit))
+            else
+              pages = Pages(Page(startIndex - limit, limit), Page(startIndex + limit, limit))
+            pages
+        }
+        BooksView(books, Await.result(pages, Duration.Inf))
 
-//  bookService.count() map { count =>
-//    var pages: Pages = null
-//    if (limit > count)
-//      pages = Pages(null, null)
-//    else if (startIndex + limit >= count)
-//      pages = Pages(Page(startIndex - limit, limit), null)
-//    else if (startIndex <= 0)
-//      pages = Pages(null, Page(startIndex + limit, limit))
-//    else
-//      pages = Pages(Page(startIndex - limit, limit), Page(startIndex + limit, limit))
-//    //          pages
+    }
+    response.ok.view("/books.mustache", Await.result(booksView, Duration.Inf))
   }
 
   get("/books/:id") { request: Request =>
@@ -46,7 +53,7 @@ class BookController @Inject()(bookService: BookService, response: ResponseBuild
   }
 
   post("/books") { request : Request =>
-    val book: Book = Book(request.params("id").toInt, request.params("author"), request.params("title"))
+    val book: Book = Book(-1, request.params("author"), request.params("title"))
     bookService.insert(book).map {
       case 1 => response.movedPermanently.location("/books")
       case 0 => response.internalServerError("Sth is wrong. Book inserting failed")
@@ -80,4 +87,4 @@ case class Page(startIndex: Int, limit: Int)
 case class Pages(prev: Page, next: Page)
 
 @Mustache("books")
-case class BooksView(books: Seq[Book]) //, pages: Pages = Pages(null, null))
+case class BooksView(books: Seq[Book], pages: Pages = Pages(null, null))
