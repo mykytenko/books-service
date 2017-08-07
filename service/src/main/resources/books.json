@@ -1,0 +1,19 @@
+{
+  "books": [
+    {
+      "id": "1",
+      "title": "The Adventures of Tom Sawyer",
+      "author": "Mark Twain"
+    },
+    {
+      "id": "2",
+      "title": "A Murder, a Mystery, and a Marriage",
+      "author": "Mark Twain"
+    },
+    {
+      "id": "3",
+      "title": "The Financier",
+      "author": "Theodore Dreiser"
+    }
+  ]
+}
